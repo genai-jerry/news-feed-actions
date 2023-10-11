@@ -4,35 +4,49 @@ import os
 import file_utils as util
     
 openai.api_key = '<api key>'
+model = 'gpt-3.5-turbo-instruct'
+
+def call_api(prompt):
+    print(f'Calling using {model}')
+    if model=='gpt-3.5-turbo-instruct':
+        # Instruct model does not support ChatCompletion
+        response = openai.Completion.create(
+            engine=model,
+            prompt=prompt,
+            max_tokens=1000
+        )
+        completion = ''
+        for choice in response.choices:
+            completion = f'{completion} {choice.text.strip()}'
+        return completion
+    else:
+        response = openai.ChatCompletion.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": prompt}
+            ]
+        )
+        completion = ''
+        for choice in response.choices:
+            completion = f'{completion} {choice.message.content.strip()}'
+        return completion
 
 def categorize_title(title):
     prompt=f'''Given the title: '{title}', categorize the article into one of the following categories: 
         A. Software Development B. Innovation C. Prediction D. Investment News.'''
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": prompt}
-        ]
-    )
-    category = response.choices[0].message.content.strip()
-    return category
+    return call_api(prompt)
 
 def summarize_content(content):
     prompt=f'''You are an expert in understanding technology content and skilled at summarising content. 
-            I would like you to go through the content and summarise it. The summary should include Brief introduction, 
-            Key Impact Areas, Advice to Software Engineers. Also, based on the content rate in a scale of 1 to 10 as to how relevant it is for software engineers.
-            Provide the output in the format Rating: <rating> ; Summary: <content>. The input content is: \n\n{content}'''
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": prompt}
-        ]
-    )
-    summary = ''
-    for choice in response.choices:
-        summary = f'{summary} {choice.message.content.strip()}'
-    return summary
+            I would like you to go through the content and summarise it. The summary should include following sections
+            1. Brief introduction 2. Key Impact Areas 3. Advice to Software Engineers. 
+            Also, based on the content rate on a scale of 1 to 10 as to how relevant it is for software engineers, 
+            10 being extremely relevant.
+            Provide the output in the format Rating: <rating> ; Summary: <content>. The input content is: \n\n{content}'''    
+    return call_api(prompt)    
+
 from datetime import datetime
+
 
 def check_folder():
     # Get today's date in 'YYYY-MM-DD' format
