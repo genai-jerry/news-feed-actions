@@ -8,7 +8,6 @@ def file_exists(folder_path, file_name):
     return os.path.isfile(file_path)
 
 import json
-
 def load_json(file_path):
     """
     Load JSON content from a file.
@@ -33,3 +32,12 @@ def write_json(file_path, data):
     """
     with open(file_path, 'w') as file:
         json.dump(data, file, indent=4)
+
+import csv
+def write_csv(filename, data):
+    with open(filename, mode='w', newline='') as file:
+        # Create a writer object
+        writer = csv.writer(file)
+        
+        # Write the data
+        writer.writerows(data)

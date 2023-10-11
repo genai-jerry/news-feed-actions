@@ -25,7 +25,7 @@ def extract_article_content(url):
 	return article_content
 
 def load_feed(today):
-	file_path = 'content/' + today
+	file_path = f'content/{today}'
 	if not util.file_exists(file_path, 'feed.json'):
 		print('Feed does not exist')
 		feed_url = 'https://rss.app/feeds/tY4l5k6Ggv1doN3i.xml'
@@ -46,13 +46,13 @@ def load_feed(today):
 			    'article_content': article_content
 			})
 
-		file_location = file_path + '/feed.json'
+		file_location = f'{file_path}/feed.json'
 		json_content = json.dumps(articles, indent=4)
 		util.write_json(file_location, json_content)
 		print('Returning Feed')
 		return json_content
 	else:
 		print('Feed exists')
-		file_location = os.path.join('content/' + today, 'feed.json')
+		file_location = os.path.join(f'content/{today}', 'feed.json')
 		print('Returning Feed')
 		return util.load_json(file_location)
