@@ -8,7 +8,8 @@ openai.api_key = '<API-KEY>'
 def categorize_title(title):
     response = openai.Completion.create(
         engine="gpt-4",
-        prompt=f"Given the title: '{title}', categorize the article into one of the following categories: A. Software Development B. Innovation C. Prediction D. Investment News.",
+        prompt=f'''Given the title: '{title}', categorize the article into one of the following categories: 
+        A. Software Development B. Innovation C. Prediction D. Investment News.''',
         temperature=0,
         max_tokens=60
     )
@@ -16,28 +17,18 @@ def categorize_title(title):
     return category
 
 def summarize_content(content):
-    response = openai.Completion.create(
-        engine="gpt-4",
-        prompt=f"You are an expert in understanding technology content and skilled at summarising content. I would like you to go through the content and summarise it. The summary should include Brief introduction, Key Impact Areas, Advice to Software Engineers. The content is: \n\n{content}",
-        temperature=0.5
-    )
-    summary = response.choices[0].text.strip()
-    return summary
-
-def podcast_content(content):
-    prompt = f"You are an expert podcast content creator. Read through the article text and generate a 5 minute long script for a podcast on Generative AI that will appeal to Software Professionals. The podcast will be a monologue. Also as an expert rate this topic between 1 to 10 in terms of appeal to the target audience that is experienced software professionals. The podcast should have an introduction, a deeper analysis of issue and a call to action. The podcast is named GenAI People. Provide response in the format <rating>:<value>, <podcast>:<content>. The input article is: \n\n{content}"
     response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": prompt}
-        ],
+        engine="gpt-4",
+        prompt=f'''You are an expert in understanding technology content and skilled at summarising content. 
+            I would like you to go through the content and summarise it. The summary should include Brief introduction, 
+            Key Impact Areas, Advice to Software Engineers. Also, based on the content rate in a scale of 1 to 10 as to how relevant it is for software engineers.
+            Provide the output in the format Rating: <rating> ; Summary: <content>. The input content is: \n\n{content}''',
         temperature=0.5
     )
-    podcast = ''
+    summary = ''
     for choice in response.choices:
-        podcast = podcast + ' ' + choice.message.content.strip()
-    return podcast
-
+        summary = f'Summary ${choice.message.content.strip()}'
+    return summary
 from datetime import datetime
 
 def check_folder():
@@ -55,7 +46,7 @@ def check_folder():
 import json
 import re
 
-def extract_podcast_info(text):
+def extract_summary_info(text):
     print(text)
     # Extracting rating value
     rating_pattern = re.compile(r'Rating: (\d+)')
