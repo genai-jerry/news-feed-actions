@@ -2,7 +2,7 @@
 This is a code for an application that can help you keep up to date with the topic of your choice.
 
 1. Connect to your favorite RSS feed in XML format.
-2. Scrate the content of the page of each link in the feed
+2. Scrape the content of the page of each link in the feed
 3. Use OpenAI API to summarise the content
 3. Store the date in a csv file
 
